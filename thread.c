@@ -58,7 +58,7 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
-static void mlfqs_on_time_slice_end (struct thread *t); // Added ASH
+static void time_slice_end (struct thread *t); // Added ASH
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
@@ -154,7 +154,7 @@ thread_tick (void)
   */
   if (++thread_ticks >= TIME_SLICE){
     if (thread_mlfqs)
-      mlfqs_on_time_slice_end (t); // Time slice rule. (ASH)
+      time_slice_end (t); // Time slice rule. (ASH)
 
     intr_yield_on_return ();
   }
@@ -634,7 +634,7 @@ allocate_tid (void)
   Demote threads when quantum expires.
 */
 static void
-mlfqs_on_time_slice_end (struct thread *t)
+time_slice_end (struct thread *t)
 {
   if (t != idle_thread && t->priority > PRI_MIN)
       t->priority--;
